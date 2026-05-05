@@ -2,7 +2,7 @@ import re
 from typing import Literal
 from langchain_core.messages import AIMessage, SystemMessage
 from app.llm import get_llm
-from app.rag import retrieve_context
+from app.rag import get_rag_service, RAGService
 
 
 # Темы, которые не требуют указания страны
@@ -49,8 +49,10 @@ def clarify_node(state: dict) -> dict:
 
 
 def retrieve_node(state: dict) -> dict:
+    """Узел поиска контекста с использованием RAGService."""
     query = state["messages"][-1].content
-    context = retrieve_context(query, state["country"])
+    rag_service: RAGService = get_rag_service()
+    context = rag_service.retrieve_context(query, state["country"])
     return {"retrieved_context": context}
 
 
