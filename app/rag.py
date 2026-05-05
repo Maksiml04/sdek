@@ -11,6 +11,7 @@ from app.parser import CdekStartParser
 logger = logging.getLogger(__name__)
 
 DB_PATH = os.getenv("CHROMA_DB_PATH", "./chroma_db")
+DATA_DIR = os.getenv("DATA_DIR", "/app/data")  # Путь внутри контейнера
 EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
 
 
@@ -65,7 +66,7 @@ class RAGService:
         else:
             logger.info("Creating new vectorstore from data files using CdekStartParser")
             
-            parser = CdekStartParser(data_dir="data/")
+            parser = CdekStartParser(data_dir=DATA_DIR)
             docs = parser.parse_all()
 
             logger.info(f"Parsed {len(docs)} documents")

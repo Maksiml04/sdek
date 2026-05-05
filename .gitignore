@@ -1,11 +1,44 @@
 ```
+# Dependencies
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 .env
 .env.local
 .env.*
-*.log
-*.tmp
+
+# Docker
+.dockerenv
+!docker-compose.yml
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Editors
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 ```
