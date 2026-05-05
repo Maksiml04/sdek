@@ -1,0 +1,18 @@
+# Test dependencies for the application
+# Install with: pip install -r requirements-test.txt
+
+# Core testing framework
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# For API testing
+httpx>=0.24.0  # Required by FastAPI TestClient
+
+# Mocking utilities (included in Python stdlib, but listed for clarity)
+# unittest.mock is part of standard library
+
+# Code quality (optional but recommended)
+flake8>=6.1.0
+black>=23.0.0
+isort>=5.12.0
