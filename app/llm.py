@@ -14,10 +14,9 @@ def get_llm() -> BaseChatModel:
     provider = os.getenv("LLM_PROVIDER", "openrouter").lower()
     model_name = os.getenv("MODEL_NAME", "deepseek/deepseek-chat")
 
-    # Базовые параметры для всех провайдеров
     common_kwargs = {
         "model": model_name,
-        "temperature": 0.0,  # детерминированные ответы для RAG
+        "temperature": 0.0,
     }
 
     if provider == "openrouter":

@@ -8,7 +8,7 @@ langchain-core
 langchain-openai          # только для LLM (DeepSeek через OpenRouter)
 langchain-community
 langchain-chroma
-
+pytest
 # Векторная БД и лёгкие эмбеддинги
 chromadb
 fastembed>=0.3.0          # ← вместо sentence-transformers

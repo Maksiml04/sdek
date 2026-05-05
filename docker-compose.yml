@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   rag-agent:
     build: .
@@ -6,9 +8,18 @@ services:
     env_file:
       - .env
     environment:
-      - PYTHONUNBUFFERED=1  # ← добавьте эту строку
+      - PYTHONUNBUFFERED=1
       - CHROMA_DB_PATH=/app/chroma_db
       - DATA_DIR=/app/data
+      # Убедитесь, что ключ передается явно, если он нужен внутри контейнера
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
     volumes:
+      # ИСПРАВЛЕНО: Монтируем локальную ./data в /app/data внутри контейнера
       - ./data:/app/data:ro
       - ./chroma_db:/app/chroma_db
+      - ./app:/app/app
+      - hf-cache:/root/.cache/huggingface
+    restart: unless-stopped
+
+volumes:
+  hf-cache:
