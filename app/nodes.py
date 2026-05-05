@@ -1,23 +1,47 @@
 import re
+from typing import Literal
 from langchain_core.messages import AIMessage, SystemMessage
 from app.llm import get_llm
 from app.rag import retrieve_context
 
 
+# Темы, которые не требуют указания страны
+GENERAL_TOPICS = [
+    "benefits", "deadlines", "general", "программа", "участие", 
+    "отбор", "язык", "дедлайн", "дата", "срок", "жильё", "проезд", 
+    "страховка", "сертификат", "выгода"
+]
+
+
 def check_country(state: dict) -> dict:
+    """Проверяет, нужна ли страна для ответа на запрос.
+    
+    Если запрос касается общих тем (benefits, deadlines, программа),
+    страна не требуется. Если запрос специфичен для локации — требуется.
+    """
     last_msg = state["messages"][-1].content if state["messages"] else ""
     country = state.get("country")
-
+    lower_msg = last_msg.lower()
+    
+    # Проверяем, является ли запрос общим (не требует страну)
+    is_general_query = any(topic in lower_msg for topic in GENERAL_TOPICS)
+    
+    # Пытаемся извлечь страну из сообщения, если она не указана в state
     if not country:
-        lower = last_msg.lower()
-        if re.search(r"(германи|germany|берлин|berlin)", lower):
+        if re.search(r"(германи|germany|берлин|berlin)", lower_msg):
             country = "germany"
-        elif re.search(r"(франци|france|париж|paris)", lower):
+        elif re.search(r"(франци|france|париж|paris)", lower_msg):
             country = "france"
-
+    
+    # Если запрос общий — страна не нужна, идём сразу на retrieve
+    if is_general_query:
+        return {"country": None, "needs_clarification": False, "is_general_query": True}
+    
+    # Если запрос специфичный и страна не найдена — нужна уточнение
     if not country:
-        return {"country": None, "needs_clarification": True}
-    return {"country": country, "needs_clarification": False}
+        return {"country": None, "needs_clarification": True, "is_general_query": False}
+    
+    return {"country": country, "needs_clarification": False, "is_general_query": False}
 
 
 def clarify_node(state: dict) -> dict:

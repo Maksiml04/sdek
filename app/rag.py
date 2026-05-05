@@ -1,15 +1,14 @@
 # app/rag.py
 import os
 import logging
-from langchain_community.document_loaders import TextLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain_community.embeddings import FastEmbedEmbeddings  # ← новая библиотека
+from langchain_community.embeddings import FastEmbedEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from app.parser import CdekStartParser
 
 logger = logging.getLogger(__name__)
 
 DB_PATH = os.getenv("CHROMA_DB_PATH", "./chroma_db")
-# Лёгкая мультиязычная модель (~40 МБ, поддерживает русский)
 EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
 
 _vectorstore = None
@@ -19,8 +18,6 @@ def get_embedding_model():
     """Создаёт лёгкую модель эмбеддингов через fastembed"""
     return FastEmbedEmbeddings(
         model_name=EMBEDDING_MODEL_NAME,
-        # cache_dir можно указать, если нужно:
-        # cache_dir=os.getenv("EMBEDDING_CACHE", "./.cache/fastembed")
     )
 
 
@@ -40,24 +37,13 @@ def init_vectorstore() -> Chroma:
             collection_name="cdekstart_knowledge"
         )
     else:
-        logger.info("Creating new vectorstore from data files")
-        docs = []
-        data_dir = "data/"
+        logger.info("Creating new vectorstore from data files using CdekStartParser")
+        
+        parser = CdekStartParser(data_dir="data/")
+        docs = parser.parse_all()
 
-        for fname in os.listdir(data_dir):
-            if not fname.endswith(".txt"):
-                continue
-            filepath = os.path.join(data_dir, fname)
-            loader = TextLoader(filepath, encoding="utf-8")
-            raw = loader.load()
-            for doc in raw:
-                doc.metadata["source"] = fname
-                if "germany" in fname.lower():
-                    doc.metadata["country"] = "germany"
-                elif "france" in fname.lower():
-                    doc.metadata["country"] = "france"
-                docs.append(doc)
-
+        logger.info(f"Parsed {len(docs)} documents")
+        
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=500,
             chunk_overlap=50,
