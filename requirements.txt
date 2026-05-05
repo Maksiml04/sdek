@@ -1,0 +1,18 @@
+# FastAPI
+fastapi
+uvicorn
+
+# LangChain экосистема
+langgraph
+langchain-core
+langchain-openai          # только для LLM (DeepSeek через OpenRouter)
+langchain-community
+langchain-chroma
+
+# Векторная БД и лёгкие эмбеддинги
+chromadb
+fastembed>=0.3.0          # ← вместо sentence-transformers
+
+# Утилиты
+python-dotenv
+pydantic
