@@ -7,7 +7,8 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1  # ← добавьте эту строку
-      - CHROMA_DB_PATH=./chroma_db
+      - CHROMA_DB_PATH=/app/chroma_db
+      - DATA_DIR=/app/data
     volumes:
       - ./data:/app/data:ro
       - ./chroma_db:/app/chroma_db
